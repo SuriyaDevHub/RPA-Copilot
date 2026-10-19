@@ -1,0 +1,16 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+data/
+*.db
+*.db-wal
+*.db-shm
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+eval/reports/
+ui/node_modules/
+ui/dist/
+src/genie_copilot/api/static/
