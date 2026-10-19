@@ -31,6 +31,9 @@ All settings via environment variables (prefix `GC_`), loaded with pydantic-sett
 | `GC_S3_EVIDENCE_PREFIX` | | Production client uploads |
 | `GC_WATCHER_INTERVAL_S` | `90` | S3 poll interval |
 | `GC_WATCHER_BOTS` | `bot-a,bot-b` | Pilot allowlist |
+| `GC_IN_HOUSE_NAMESPACES` | `Genie.,Acme.Bots.` | Prefixes of in-house .NET namespaces (signature, frame marking) |
+| `GC_MASK_NAMES` | `Jane Roe,John Doe` | Person names to mask, comma separated |
+| `GC_MASK_HOST_PATTERNS` | `["\\bVDI-[A-Z]{3}-\\d{4}\\b"]` | JSON list of host-name regexes to mask; validated at startup |
 | `GC_JIRA_BASE_URL` / `GC_JIRA_TOKEN` | | Service account PAT |
 | `GC_JIRA_PROJECT` / `GC_JIRA_ISSUE_TYPE` | | L2 queue |
 | `GC_JIRA_FIELD_MAP` | JSON | Template field → Jira field id |
@@ -122,6 +125,12 @@ Interface: `enqueue(session, incident_id, type, run_after=None)`, `claim(worker_
 `exception_type`, `message`, `frames: list[Frame{method, file|None, line|None, in_house: bool}]`, `inner: list[ParsedError]`, `window: list[LogLine{id:int, ts|None, level|None, text}]`, `error_signature: str (sha256 hex, 16 chars)`, `failed_step | None`.
 
 Signature = sha256 of `exception_type + normalised(message) + first 3 in-house frame methods`, where `normalised` strips GUIDs, numbers longer than 3 digits, file paths, timestamps, emails, and quoted values.
+
+- Computed on the **root-cause (innermost) exception after masking**; mask placeholders are normalised (`<ID_2>` → `<ID>`) so different users give the same signature. If the root cause has no in-house frames, the next exception outward is used.
+- In-house frames: methods starting with a `GC_IN_HOUSE_NAMESPACES` prefix; when unset, anything not under `System.` / `Microsoft.`.
+- `ParsedError` also carries `error_line_id` (the first error line). Everything in it is masked; the parser never returns unmasked text.
+- `parsed_error.frames` stores the whole exception chain, outermost first: `[{exception_type, message, frames}]`.
+- Masking (`logs/masking.py`): emails, the user segment of `C:\Users\<name>`, IBAN, ISIN, card and 8–20 digit account numbers, IPv4, names from `GC_MASK_NAMES`, hosts matching `GC_MASK_HOST_PATTERNS`, and the incident's own user id and VDI host. The placeholder → value map stays in memory only.
 
 ### 5.3 `Diagnosis` (LLM output schema — strict JSON schema)
 ```json

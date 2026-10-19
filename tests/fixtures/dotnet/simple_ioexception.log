@@ -1,0 +1,10 @@
+2026-10-01 09:14:02.113 INFO  [Runner] Starting bot invoice-loader run 7f3c2a1e-9b8d-4c6e-a1f2-3d4e5f6a7b8c for user jdoe on VDI-LON-0042
+2026-10-01 09:14:03.554 INFO  [Step 3/7 ReadInvoices] Opening C:\Users\jdoe\Documents\invoices\batch_20261001.xlsx
+2026-10-01 09:14:03.901 ERROR [Step 3/7 ReadInvoices] Step failed
+System.IO.IOException: The process cannot access the file 'C:\Users\jdoe\Documents\invoices\batch_20261001.xlsx' because it is being used by another process.
+   at System.IO.FileStream.ValidateFileHandle(SafeFileHandle fileHandle)
+   at System.IO.FileStream..ctor(String path, FileMode mode)
+   at Genie.Bot.Excel.WorkbookReader.Open(String path) in D:\build\genie\src\Excel\WorkbookReader.cs:line 41
+   at Genie.Bot.Steps.ReadInvoicesStep.Execute(StepContext ctx) in D:\build\genie\src\Steps\ReadInvoicesStep.cs:line 88
+   at Genie.Bot.Runner.RunStep(IStep step) in D:\build\genie\src\Runner.cs:line 120
+2026-10-01 09:14:03.905 INFO  [Runner] Notifying john.doe@example-bank.com

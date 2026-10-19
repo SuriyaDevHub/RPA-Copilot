@@ -11,7 +11,7 @@ Claude Code adds to this list whenever it hits a bank-specific value it must not
 | 5 | S3 key naming convention for Genie logs | M3 | You / Genie team | |
 | 6 | Do current logs contain user id, VDI host, run id, step name? | M3 | You (from samples) | |
 | 7 | Rule that marks a run as failed in today's logs | M3 | Genie team | |
-| 8 | In-house .NET namespace prefixes (for marking in-house stack frames) | M3 | Genie team | |
+| 8 | In-house .NET namespace prefixes (for marking in-house stack frames). Until set, anything outside `System.`/`Microsoft.` counts as in-house | M3 | Genie team | |
 | 9 | Mapping from Windows user id to email (directory lookup?) | M4 | Infra | |
 | 10 | Jira: project key, issue type, required custom field ids, resolution statuses | M7–M8 | You | |
 | 11 | Genie support template: exact fields and allowed values | M7 | Genie team | |
@@ -25,3 +25,5 @@ Claude Code adds to this list whenever it hits a bank-specific value it must not
 | 19 | Can `READ_COMMITTED_SNAPSHOT` be enabled on the copilot database (reduces reader/writer blocking for the job queue)? | P1 | DBA | |
 | 20 | tiktoken downloads `cl100k_base` on first use; behind the proxy it fails and we fall back to 4 chars/token. Vendor the file and set `TIKTOKEN_CACHE_DIR`? | M2 | Infra | |
 | 21 | Does the gateway expect `max_tokens` or `max_completion_tokens`, and does it accept `temperature`? (M2 sends `max_tokens`, no temperature) | M2 | GenAI platform | |
+| 22 | Timezone of timestamps in Genie logs (parser assumes UTC when no offset is written) | M3 | Genie team | |
+| 23 | Full list of sensitive identifiers to mask (client ids, internal account formats, Windows `DOMAIN\\user` forms, host naming) | M3 | Security / Genie team | |

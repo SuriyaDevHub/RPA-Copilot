@@ -1,0 +1,8 @@
+2026-10-04 14:00:00 INFO Validating input file
+2026-10-04 14:00:01 FATAL Input validation aborted
+Genie.Bot.Validation.InputValidationException: Input file has 3 invalid rows:
+row 4: ISIN US0378331005 not in master list
+row 9: amount missing
+   at Genie.Bot.Validation.InputValidator.Validate(DataTable table) in D:\build\genie\src\Validation\InputValidator.cs:line 77
+   at Genie.Bot.Steps.ValidateStep.Execute(StepContext ctx)
+2026-10-04 14:00:01 INFO Run ended

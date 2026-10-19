@@ -1,0 +1,10 @@
+[2026-10-03T08:30:00Z] INFO Step 2 LoginPortal
+[2026-10-03T08:30:12Z] ERROR LoginPortal failed
+System.TimeoutException: Element '#username' not found after 30000 ms
+   at Genie.Bot.Web.ElementFinder.<WaitForAsync>d__7.MoveNext() in D:\build\genie\src\Web\ElementFinder.cs:line 64
+--- End of stack trace from previous location ---
+   at System.Runtime.CompilerServices.TaskAwaiter.ThrowForNonSuccess(Task task)
+   at Genie.Bot.Steps.LoginPortalStep.<ExecuteAsync>d__3.MoveNext() in D:\build\genie\src\Steps\LoginPortalStep.cs:line 22
+--- End of stack trace from previous location ---
+   at Genie.Bot.Runner.<RunStepAsync>d__12.MoveNext()
+[2026-10-03T08:30:12Z] INFO Screenshot saved to C:\Users\bwong\AppData\Local\Genie\shot.png

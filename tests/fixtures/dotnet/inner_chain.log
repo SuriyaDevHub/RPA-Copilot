@@ -1,0 +1,12 @@
+2026-10-02 11:00:00 INFO Run 11 started for user asmith host VDI-NYC-0007
+2026-10-02 11:00:05 ERROR Unhandled exception in step PostPayments
+Genie.Bot.StepFailedException: Step PostPayments failed ---> System.Net.Http.HttpRequestException: Response status code does not indicate success: 503 (Service Unavailable). ---> System.Net.Sockets.SocketException: Connection refused 10.20.30.40:8443
+   at System.Net.Sockets.Socket.Connect(EndPoint remoteEP)
+   at System.Net.Http.HttpConnectionPool.ConnectAsync(HttpRequestMessage request)
+   --- End of inner exception stack trace ---
+   at System.Net.Http.HttpClient.SendAsync(HttpRequestMessage request)
+   at Genie.Bot.Payments.PaymentApi.Post(Payment p) in D:\build\genie\src\Payments\PaymentApi.cs:line 55
+   --- End of inner exception stack trace ---
+   at Genie.Bot.Steps.PostPaymentsStep.Execute(StepContext ctx) in D:\build\genie\src\Steps\PostPaymentsStep.cs:line 30
+   at Genie.Bot.Runner.RunStep(IStep step)
+2026-10-02 11:00:05 INFO Payment for account 12345678901 to IBAN GB29NWBK60161331926819 not sent

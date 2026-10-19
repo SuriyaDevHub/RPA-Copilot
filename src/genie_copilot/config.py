@@ -6,6 +6,7 @@ Bank-specific values have no defaults or obvious placeholders; see docs/OPEN_QUE
 
 from __future__ import annotations
 
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Literal, Self
@@ -70,6 +71,13 @@ class Settings(BaseSettings):
     watcher_interval_s: int = Field(default=90, gt=0)
     watcher_bots: Annotated[list[str], NoDecode] = Field(default_factory=list)
 
+    # Log parsing and masking (OPEN_QUESTIONS #8)
+    # Namespace prefixes of Genie's own code; empty = anything not System./Microsoft.
+    in_house_namespaces: Annotated[list[str], NoDecode] = Field(default_factory=list)
+    # Person names to mask (comma separated) and host-name regexes (JSON list).
+    mask_names: Annotated[list[str], NoDecode] = Field(default_factory=list)
+    mask_host_patterns: list[str] = Field(default_factory=list)
+
     # Jira (OPEN_QUESTIONS #10)
     jira_base_url: str = ""
     jira_token: SecretStr = SecretStr("")
@@ -92,11 +100,21 @@ class Settings(BaseSettings):
     feature_self_heal: bool = False
     worker_concurrency: int = Field(default=1, ge=1)
 
-    @field_validator("watcher_bots", mode="before")
+    @field_validator("watcher_bots", "in_house_namespaces", "mask_names", mode="before")
     @classmethod
     def _split_bots(cls, value: object) -> object:
         if isinstance(value, str):
             return [b.strip() for b in value.split(",") if b.strip()]
+        return value
+
+    @field_validator("mask_host_patterns")
+    @classmethod
+    def _compile_patterns(cls, value: list[str]) -> list[str]:
+        for pattern in value:
+            try:
+                re.compile(pattern)
+            except re.error as exc:
+                raise ValueError(f"invalid GC_MASK_HOST_PATTERNS regex {pattern!r}: {exc}") from exc
         return value
 
     @property

@@ -1,0 +1,5 @@
+2026-10-06 07:00:00 INFO Starting bot invoice-loader for user jdoe
+2026-10-06 07:00:10 INFO Step 1/2 ReadInvoices done (42 rows)
+2026-10-06 07:00:20 WARN Slow response from portal (4.2 s)
+2026-10-06 07:00:30 INFO Step 2/2 PostInvoices done
+2026-10-06 07:00:31 INFO Run completed successfully

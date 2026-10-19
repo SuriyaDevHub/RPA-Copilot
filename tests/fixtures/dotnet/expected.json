@@ -1,0 +1,33 @@
+{
+  "simple_ioexception.log": {
+    "error_line_id": 3,
+    "chain": ["System.IO.IOException"],
+    "root_in_house": ["Genie.Bot.Excel.WorkbookReader.Open", "Genie.Bot.Steps.ReadInvoicesStep.Execute", "Genie.Bot.Runner.RunStep"],
+    "root_frames": 5
+  },
+  "inner_chain.log": {
+    "error_line_id": 2,
+    "chain": ["Genie.Bot.StepFailedException", "System.Net.Http.HttpRequestException", "System.Net.Sockets.SocketException"],
+    "root_in_house": [],
+    "root_frames": 2
+  },
+  "async_frames.log": {
+    "error_line_id": 2,
+    "chain": ["System.TimeoutException"],
+    "root_in_house": ["Genie.Bot.Web.ElementFinder.WaitForAsync", "Genie.Bot.Steps.LoginPortalStep.ExecuteAsync", "Genie.Bot.Runner.RunStepAsync"],
+    "root_frames": 4
+  },
+  "multiline_message.log": {
+    "error_line_id": 2,
+    "chain": ["Genie.Bot.Validation.InputValidationException"],
+    "root_in_house": ["Genie.Bot.Validation.InputValidator.Validate", "Genie.Bot.Steps.ValidateStep.Execute"],
+    "root_frames": 2
+  },
+  "error_without_trace.log": {
+    "error_line_id": 2,
+    "chain": ["Unknown"],
+    "root_in_house": [],
+    "root_frames": 0
+  },
+  "successful_run.log": null
+}

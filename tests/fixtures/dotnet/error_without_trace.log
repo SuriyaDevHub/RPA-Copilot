@@ -1,0 +1,3 @@
+2026-10-05 10:00:00 INFO Step 1 CheckLicence
+2026-10-05 10:00:01 ERROR Licence server licence.example-bank.internal returned EXPIRED for user cmorgan
+2026-10-05 10:00:01 INFO Run ended
