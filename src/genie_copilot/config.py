@@ -10,7 +10,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Annotated, Literal, Self
 
-from pydantic import Field, SecretStr, field_validator, model_validator
+from pydantic import BaseModel, Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 Env = Literal["dev", "uat", "prod"]
@@ -18,6 +18,11 @@ AuthMode = Literal["dev", "openam"]
 
 # Placeholder marker for values that must be supplied per environment.
 PLACEHOLDER = "CHANGE-ME"
+
+
+class ModelPrice(BaseModel):
+    input: float = Field(ge=0)
+    output: float = Field(ge=0)
 
 
 class Settings(BaseSettings):
@@ -51,6 +56,12 @@ class Settings(BaseSettings):
     embed_timeout_s: float = Field(default=10, gt=0)
     llm_max_input_tokens: int = Field(default=6000, gt=0)
     llm_max_output_tokens: int = Field(default=1000, gt=0)
+    llm_max_retries: int = Field(default=2, ge=0)
+    # Whether the fallback model accepts strict json_schema; if not, json_object + Pydantic.
+    llm_fallback_json_schema: bool = False
+    # Model id -> USD per 1k tokens, e.g. {"gpt-x": {"input": 0.005, "output": 0.015}}.
+    llm_price_table: dict[str, ModelPrice] = Field(default_factory=dict)
+    token_scope: str = ""
 
     # S3 (OPEN_QUESTIONS #5)
     s3_bucket: str = ""

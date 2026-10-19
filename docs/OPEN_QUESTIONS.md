@@ -4,7 +4,7 @@ Claude Code adds to this list whenever it hits a bank-specific value it must not
 
 | # | Question | Needed by | Owner | Answer |
 | --- | --- | --- | --- | --- |
-| 1 | Token endpoint: full FQDN path, grant type, request format, token lifetime | M2 | GenAI platform | |
+| 1 | Token endpoint: full FQDN path, grant type, request format, token lifetime. M2 assumes OAuth2 client credentials (form POST, `access_token` + `expires_in` reply) | M2 | GenAI platform | |
 | 2 | Header the gateway expects (`Authorization: Bearer` or `AMToken`) | M2 | GenAI platform | |
 | 3 | Exact model ids for the GPT model, Qwen and text-embedding-small | M2 | GenAI platform | |
 | 4 | Does the gateway enforce `json_schema` strict mode for Qwen? | M2 | GenAI platform | |
@@ -23,3 +23,5 @@ Claude Code adds to this list whenever it hits a bank-specific value it must not
 | 17 | Genie Bot target .NET framework and step-runner structure | P2 | Genie team | |
 | 18 | New structured log format spec and release date | P3 | Genie team | |
 | 19 | Can `READ_COMMITTED_SNAPSHOT` be enabled on the copilot database (reduces reader/writer blocking for the job queue)? | P1 | DBA | |
+| 20 | tiktoken downloads `cl100k_base` on first use; behind the proxy it fails and we fall back to 4 chars/token. Vendor the file and set `TIKTOKEN_CACHE_DIR`? | M2 | Infra | |
+| 21 | Does the gateway expect `max_tokens` or `max_completion_tokens`, and does it accept `temperature`? (M2 sends `max_tokens`, no temperature) | M2 | GenAI platform | |

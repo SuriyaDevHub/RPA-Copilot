@@ -58,7 +58,7 @@ docs/                  SPEC.md, DEVELOPMENT_PLAN.md, runbooks/
 
 1. **The LLM never acts.** It returns JSON that code validates. Routing, reruns, Jira and email are code paths gated by a human click.
 2. **Mask before every LLM or embedding call.** All text goes through `logs.masking.mask()` first. There is a unit test that fails if any agent calls `LLMClient` with unmasked fixtures.
-3. **Agents never import `openai`.** Only `llm/client.py` does. Agents depend on the `LLMClient` protocol so tests can inject a fake.
+3. **Agents never import `openai`.** Only `llm/client.py` does. Agents depend on the `LLMClient` protocol in `llm/base.py` so tests can inject `tests/fakes.py` `FakeLLMClient`.
 4. **Evidence or UNKNOWN.** Diagnoses must cite log line ids and KB ids that exist; otherwise category = `UNKNOWN`. Validation is code, not prompt.
 5. **Every step is idempotent** and keyed on `incident_id + step`. Every state change writes an `incident_event` row.
 6. **Graceful degradation.** Any agent failure moves the incident to `FALLBACK_MANUAL` with whatever was produced, never to a dead end.
