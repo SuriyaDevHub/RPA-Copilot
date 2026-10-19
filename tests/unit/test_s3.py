@@ -1,26 +1,10 @@
 import codecs
-from collections.abc import Iterator
 from datetime import UTC, datetime, timedelta
 
-import boto3
-import pytest
 from freezegun import freeze_time
-from moto import mock_aws
 
 from genie_copilot.integrations.s3 import S3Store, decode_log
-
-BUCKET = "genie-logs"
-
-
-@pytest.fixture
-def s3(monkeypatch: pytest.MonkeyPatch) -> Iterator[object]:
-    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "testing")
-    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "testing")
-    monkeypatch.setenv("AWS_DEFAULT_REGION", "us-east-1")
-    with mock_aws():
-        client = boto3.client("s3")
-        client.create_bucket(Bucket=BUCKET)
-        yield client
+from tests.helpers import BUCKET
 
 
 def test_list_since_watermark_sorted_and_paginated(s3) -> None:  # type: ignore[no-untyped-def]

@@ -40,9 +40,10 @@ src/genie_copilot/
   logs/                sources/ (base.py, s3_legacy.py, structured.py), parser.py, masking.py, signature.py
   kb/                  ingest.py, chunking.py, vector_store.py, bm25.py, retriever.py, sources/
   agents/              log_parser.py, diagnostic.py, router.py, template_generator.py, integration.py, learner.py
-  orchestrator/        states.py, machine.py, worker.py
-  integrations/        s3.py, jira.py, mailer.py, outbox.py
-  watcher/             s3_watcher.py
+  orchestrator/        states.py, machine.py, handlers.py (one per job type), worker.py
+  integrations/        s3.py, jira.py, mailer.py, outbox.py, notify.py
+  watcher/             s3_watcher.py, help_runs.py ("Get help" runs)
+  wiring.py            composition root: builds engine, queue, S3, agents, worker, watcher
   api/                 main.py, deps.py, auth.py, routes/ (incidents.py, help.py, kb.py, stats.py, health.py, actions.py)
   prompts/             diagnose.v1.md, draft.v1.md, kb_entry.v1.md
   observability/       logging.py, tracing.py, metrics.py

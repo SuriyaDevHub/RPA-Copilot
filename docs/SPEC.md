@@ -43,6 +43,9 @@ All settings via environment variables (prefix `GC_`), loaded with pydantic-sett
 | `GC_CONFIDENCE_THRESHOLD` | `0.8` | Routing |
 | `GC_FEATURE_SELF_HEAL` | `false` | Global kill switch (production) |
 | `GC_WORKER_CONCURRENCY` | `1` | Must be 1 on SQLite |
+| `GC_WORKER_POLL_INTERVAL_S` / `GC_WORKER_STALE_LOCK_S` | `1` / `600` | Idle poll; lock age after which a job is reclaimed |
+| `GC_SSE_POLL_INTERVAL_S` / `GC_SSE_TIMEOUT_S` | `1` / `300` | Event stream polling; clients reconnect with `Last-Event-ID` after the timeout |
+| `GC_HELP_MAX_RUNS` | `200` | Max S3 objects scanned for "Get help" |
 
 Startup validation: refuse to start if `GC_ENV=prod` and the DB URL is SQLite, or `GC_AUTH_MODE=dev`, or `GC_WORKER_CONCURRENCY>1` on SQLite.
 
@@ -227,6 +230,12 @@ Router rules (pure function, unit-tested with a table):
 | `GET /v1/stats/summary`, `/daily`, `/categories` | support | stats (later dashboard use) |
 
 Roles: `user` (own incidents), `support` (all incidents), `l2` (KB approvals). Authorization checks live in `api/deps.py`.
+
+- `dev` auth: `X-Dev-User: <id>` and optional `X-Dev-Roles: support,l2`. Owner checks compare user ids case-insensitively. A malformed incident id is a 404.
+- `GET /v1/incidents/{id}/events`: `event: state` per `incident_event` row with `id:` set, in order; honours `Last-Event-ID`; ends with `event: end` once the incident is finished or in `FALLBACK_MANUAL`, or after `GC_SSE_TIMEOUT_S`.
+- `POST /v1/help/runs/{s3_key_b64}/incident`: 201 when created, 200 when the run already has an incident. 403 for another user's run (support may open any), 404 for unknown keys or bots outside `GC_WATCHER_BOTS`.
+- Opening an incident (watcher or help page) writes a `None → RECEIVED` event and enqueues `parse` in the same transaction.
+- Job types without an agent yet (`diagnose`, `route`, `draft`, `integrate`, `learn`) move the incident to `FALLBACK_MANUAL` with the milestone named in the reason.
 
 ---
 

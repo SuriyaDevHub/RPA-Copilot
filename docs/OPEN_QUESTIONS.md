@@ -8,9 +8,9 @@ Claude Code adds to this list whenever it hits a bank-specific value it must not
 | 2 | Header the gateway expects (`Authorization: Bearer` or `AMToken`) | M2 | GenAI platform | |
 | 3 | Exact model ids for the GPT model, Qwen and text-embedding-small | M2 | GenAI platform | |
 | 4 | Does the gateway enforce `json_schema` strict mode for Qwen? | M2 | GenAI platform | |
-| 5 | S3 key naming convention for Genie logs | M3 | You / Genie team | |
+| 5 | S3 key naming convention for Genie logs. Placeholder in M4: `<GC_S3_LOG_PREFIX><bot_name>/...`, user/host/run not recovered, so "Get help" lists nothing for users until M3 part 2 | M3 | You / Genie team | |
 | 6 | Do current logs contain user id, VDI host, run id, step name? | M3 | You (from samples) | |
-| 7 | Rule that marks a run as failed in today's logs | M3 | Genie team | |
+| 7 | Rule that marks a run as failed in today's logs. Placeholder in M4: any ERROR/FATAL line or .NET exception header | M3 | Genie team | |
 | 8 | In-house .NET namespace prefixes (for marking in-house stack frames). Until set, anything outside `System.`/`Microsoft.` counts as in-house | M3 | Genie team | |
 | 9 | Mapping from Windows user id to email (directory lookup?) | M4 | Infra | |
 | 10 | Jira: project key, issue type, required custom field ids, resolution statuses | M7–M8 | You | |

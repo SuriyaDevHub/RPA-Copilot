@@ -54,3 +54,20 @@ def make_incident(factory: sessionmaker[Session]):  # type: ignore[no-untyped-de
         return incident
 
     return _make
+
+
+@pytest.fixture
+def s3(monkeypatch: pytest.MonkeyPatch) -> Iterator[object]:
+    """A moto S3 client with the Genie log bucket created."""
+    import boto3
+    from moto import mock_aws
+
+    from tests.helpers import BUCKET
+
+    monkeypatch.setenv("AWS_ACCESS_KEY_ID", "testing")
+    monkeypatch.setenv("AWS_SECRET_ACCESS_KEY", "testing")
+    monkeypatch.setenv("AWS_DEFAULT_REGION", "us-east-1")
+    with mock_aws():
+        client = boto3.client("s3")
+        client.create_bucket(Bucket=BUCKET)
+        yield client

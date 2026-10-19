@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
-from sqlalchemy import update
+from typing import Any
+
+from sqlalchemy import select, update
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from genie_copilot.db.models import Incident, IncidentEvent
@@ -53,3 +56,40 @@ def transition(
     session.add(event)
     session.flush()
     return event
+
+
+def open_incident(session: Session, actor: str = "system", **fields: Any) -> tuple[Incident, bool]:
+    """Create an incident in RECEIVED, or return the one with the same dedup_key.
+
+    Returns (incident, created). Safe against a concurrent creator of the same key.
+    """
+    dedup_key = fields["dedup_key"]
+    existing = _by_dedup_key(session, dedup_key)
+    if existing is not None:
+        return existing, False
+    incident = Incident(**fields, state=State.RECEIVED.value)
+    try:
+        with session.begin_nested():
+            session.add(incident)
+            session.flush()
+            session.add(
+                IncidentEvent(
+                    incident_id=incident.id,
+                    from_state=None,
+                    to_state=State.RECEIVED.value,
+                    reason=f"opened by {fields.get('source', 'unknown')}",
+                    actor=actor,
+                    at=incident.created_at,
+                )
+            )
+            session.flush()
+    except IntegrityError:
+        found = _by_dedup_key(session, dedup_key)
+        if found is None:
+            raise
+        return found, False
+    return incident, True
+
+
+def _by_dedup_key(session: Session, dedup_key: str) -> Incident | None:
+    return session.scalars(select(Incident).where(Incident.dedup_key == dedup_key)).first()

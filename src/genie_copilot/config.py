@@ -99,6 +99,11 @@ class Settings(BaseSettings):
     confidence_threshold: float = Field(default=0.8, ge=0.0, le=1.0)
     feature_self_heal: bool = False
     worker_concurrency: int = Field(default=1, ge=1)
+    worker_poll_interval_s: float = Field(default=1.0, gt=0)
+    worker_stale_lock_s: int = Field(default=600, gt=0)
+    sse_poll_interval_s: float = Field(default=1.0, gt=0)
+    sse_timeout_s: int = Field(default=300, gt=0)
+    help_max_runs: int = Field(default=200, gt=0)
 
     @field_validator("watcher_bots", "in_house_namespaces", "mask_names", mode="before")
     @classmethod
