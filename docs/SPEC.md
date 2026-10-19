@@ -53,8 +53,12 @@ RECEIVED
             │                                            └ ACTION_FAILED → DRAFTED
             └─ DRAFTED
   DRAFTED → IN_REVIEW → SUBMITTED → TICKETED → RESOLVED_L2 → KB_PENDING → KB_UPDATED
-Any state → FALLBACK_MANUAL (terminal for automation; user can still submit the manual template)
+Any unfinished state → FALLBACK_MANUAL (terminal for automation)
+FALLBACK_MANUAL → IN_REVIEW → SUBMITTED (the user can still submit the manual template)
 ```
+
+- Finished states: `CLOSED`, `KB_UPDATED`. Nothing follows them, not even `FALLBACK_MANUAL`.
+- `transition()` is a compare-and-set on the old state; if another process moved the incident first it raises `ConcurrentTransition`.
 
 - Allowed transitions are a dict in `states.py`; `machine.transition(incident, to_state, reason)` raises on an illegal move and writes `incident_event`.
 - Each automated step is a job type: `parse`, `diagnose`, `route`, `draft`, `integrate`, `learn`.
@@ -86,7 +90,11 @@ Portable types (in `db/types.py`): `UTCDateTime`, `JSONText` (JSON serialised to
 
 ## 4. Job queue (`db/queue.py`)
 
-Interface: `enqueue(incident_id, type, run_after=None)`, `claim(worker_id) -> Job | None`, `complete(job)`, `fail(job, error, retry_in)`, `reclaim_stale(timeout_s)`.
+Interface: `enqueue(session, incident_id, type, run_after=None)`, `claim(worker_id) -> Job | None`, `complete(session, job)`, `fail(session, job, error, retry_in=None) -> bool`, `reclaim_stale(timeout_s) -> int`.
+
+- `enqueue`, `complete` and `fail` join the caller's transaction so job changes commit with the work they record; `claim` and `reclaim_stale` run their own.
+- `enqueue` is idempotent on `(incident_id, type)` and returns the existing job.
+- `attempts` counts claims. `reclaim_stale` treats an expired lock as a failed attempt.
 
 - **SQLite**: single worker. Claim inside `BEGIN IMMEDIATE`: select oldest `queued` with `run_after <= now`, update to `running`. WAL mode and `busy_timeout=5000` set on connect.
 - **SQL Server**:
@@ -97,7 +105,7 @@ Interface: `enqueue(incident_id, type, run_after=None)`, `claim(worker_id) -> Jo
   WHERE status = 'queued' AND (run_after IS NULL OR run_after <= SYSUTCDATETIME());
   ```
   (Ordering: wrap in a CTE `WITH next AS (SELECT TOP (1) ... ORDER BY id)` then `UPDATE next`.)
-- Implementation chosen by `engine.dialect.name`. Max 3 attempts, backoff 30 s / 2 min / 10 min, then incident → `FALLBACK_MANUAL`.
+- Implementation chosen by `engine.dialect.name`. Max 4 attempts (first try + 3 retries), backoff 30 s / 2 min / 10 min, then job `failed` and incident → `FALLBACK_MANUAL` in the same transaction (skipped if the incident is already finished). `fail(retry_in=...)` overrides the backoff.
 
 ---
 

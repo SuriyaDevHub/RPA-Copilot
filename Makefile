@@ -6,13 +6,13 @@ install:
 	$(PY) -m pip install -e ".[dev]"
 
 lint:
-	$(PY) -m ruff check src tests
-	$(PY) -m ruff format --check src tests
+	$(PY) -m ruff check src tests scripts
+	$(PY) -m ruff format --check src tests scripts
 	$(PY) -m mypy
 
 format:
-	$(PY) -m ruff format src tests
-	$(PY) -m ruff check --fix src tests
+	$(PY) -m ruff format src tests scripts
+	$(PY) -m ruff check --fix src tests scripts
 
 test:
 	$(PY) -m pytest -q

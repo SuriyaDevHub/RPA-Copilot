@@ -22,3 +22,4 @@ Claude Code adds to this list whenever it hits a bank-specific value it must not
 | 16 | SQL Server version, database name, auth mode (SQL login or integrated), backup policy | P1 | DBA | |
 | 17 | Genie Bot target .NET framework and step-runner structure | P2 | Genie team | |
 | 18 | New structured log format spec and release date | P3 | Genie team | |
+| 19 | Can `READ_COMMITTED_SNAPSHOT` be enabled on the copilot database (reduces reader/writer blocking for the job queue)? | P1 | DBA | |
